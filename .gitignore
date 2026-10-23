@@ -19,8 +19,8 @@ target/
 ### Frontend ###
 node_modules/
 dist/
-# the built frontend copied into the Spring app by `npm run build:spring`
-backend/src/main/resources/static/
+## the built frontend copied into the Spring app by `npm run build:spring`
+#backend/src/main/resources/static/
 
 ### Eclipse (this is what created the old bin/ folder) ###
 bin/
