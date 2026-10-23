@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/* Big Shoulders Display for the date numerals and day numbers, Instrument Sans for everything else. */
+@theme {
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Big Shoulders Display Variable", "Arial Narrow", Impact, sans-serif;
+}
+
+@theme inline {
+  --color-bg: var(--c-bg);
+  --color-surface: var(--c-surface);
+  --color-raised: var(--c-raised);
+  --color-ink: var(--c-ink);
+  --color-on-ink: var(--c-on-ink);
+  --color-muted: var(--c-muted);
+  --color-line: var(--c-line);
+  --color-danger: var(--c-danger);
+  --color-done: var(--c-done);
+  --color-late: var(--c-late);
+}
+
+:root {
+  --c-bg: #e9eee9;
+  --c-surface: #f6f8f5;
+  --c-raised: #ffffff;
+  --c-ink: #13211b;
+  --c-on-ink: #f6f8f5;
+  --c-muted: #56665e;
+  --c-line: #cfd8d1;
+  --c-danger: #b3321d;
+  --c-done: #0f7a5c;
+  --c-late: #a76508;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --c-bg: #0d1411;
+  --c-surface: #141d19;
+  --c-raised: #1b2722;
+  --c-ink: #e4eee8;
+  --c-on-ink: #0d1411;
+  --c-muted: #94a79d;
+  --c-line: #2a3a32;
+  --c-danger: #ff8a75;
+  --c-done: #3fd6a2;
+  --c-late: #e8b04a;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: var(--c-bg);
+  }
+  body {
+    @apply bg-bg font-sans text-ink antialiased;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  :focus-visible {
+    outline: 2px solid var(--c-ink);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--c-done) 30%, transparent);
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full px-5 py-2.5 text-[0.95rem] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-ink text-on-ink hover:opacity-90;
+  }
+  .btn-quiet {
+    @apply border border-line text-ink hover:bg-raised;
+  }
+  .btn-danger {
+    @apply border border-danger text-danger hover:bg-danger hover:text-on-ink;
+  }
+  .btn-danger-solid {
+    @apply bg-danger text-on-ink hover:opacity-90;
+  }
+  .btn-small {
+    @apply px-4 py-2 text-sm;
+  }
+  .input {
+    @apply w-full rounded-xl border border-line bg-raised px-4 py-3 text-ink placeholder:text-muted/70 focus:border-ink;
+  }
+  .icon-btn {
+    @apply grid size-9 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-raised hover:text-ink disabled:opacity-40;
+  }
+}
+
+/*
+ * The date numeral is the one memorable element: it is an outline that fills from the bottom
+ * with the "done" colour as the day's tasks are ticked off. --p is registered so the fill animates.
+ */
+@property --p {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+.numeral {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: var(--stroke, 2px) var(--c-ink);
+  background: linear-gradient(to top, var(--c-done) var(--p), transparent var(--p));
+  -webkit-background-clip: text;
+  background-clip: text;
+  transition: --p 800ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+/* Round tick box. The tick is drawn with a stroke animation when checked. */
+.tick-mark path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  transition: stroke-dashoffset 240ms ease-out 60ms;
+}
+.tick input:checked + .tick-box {
+  border-color: var(--c-done);
+  background: var(--c-done);
+}
+.tick input:checked + .tick-box .tick-mark path {
+  stroke-dashoffset: 0;
+}
+.tick input:focus-visible + .tick-box {
+  outline: 2px solid var(--c-ink);
+  outline-offset: 3px;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.toast {
+  animation: toast-in 180ms ease-out both;
+}
+
+dialog::backdrop {
+  background: color-mix(in srgb, var(--c-ink) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .numeral,
+  .tick-mark path,
+  .toast {
+    transition: none;
+    animation: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
